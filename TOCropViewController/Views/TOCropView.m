@@ -178,7 +178,7 @@ typedef NS_ENUM(NSInteger, TOCropViewOverlayEdge) {
         self.translucencyView.frame = CGRectInset(self.bounds, -1.0f, -1.0f);
     }
     
-    self.translucencyView.hidden = NO;
+    self.translucencyView.hidden = YES;
     self.translucencyView.userInteractionEnabled = NO;
     self.translucencyView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:self.translucencyView];
@@ -1214,7 +1214,7 @@ typedef NS_ENUM(NSInteger, TOCropViewOverlayEdge) {
         } completion:^(BOOL complete) {
             self.backgroundContainerView.hidden = NO;
             self.foregroundContainerView.hidden = NO;
-            self.translucencyView.hidden = NO;
+            self.translucencyView.hidden = YES;
             self.gridOverlayView.hidden = NO;
             
             self.backgroundContainerView.alpha = 0.0f;
