@@ -72,6 +72,7 @@
         _transitionController = [[TOCropViewControllerTransitioning alloc] init];
         _image = image;
         _isCropRatioFlipped = NO;
+        _rotateButtonsHidden = YES;
         _defaultAspectRatio = TOCropViewControllerAspectRatio4x3;
         _toolbarPosition = TOCropViewControllerToolbarPositionBottom;
     }
@@ -571,10 +572,6 @@
 - (void)setRotateButtonsHidden:(BOOL)rotateButtonsHidden
 {
     self.toolbar.rotateCounterClockwiseButtonHidden = rotateButtonsHidden;
-    
-    if (self.rotateClockwiseButtonHidden == NO) {
-        self.toolbar.rotateClockwiseButtonHidden = rotateButtonsHidden;
-    }
 }
 
 - (void)setRotateClockwiseButtonHidden:(BOOL)rotateClockwiseButtonHidden

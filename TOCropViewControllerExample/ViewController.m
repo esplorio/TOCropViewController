@@ -126,6 +126,7 @@
         TOCropViewController *cropController = [[TOCropViewController alloc] initWithImage:image];
         cropController.delegate = self;
         cropController.aspectRatioLocked = YES;
+        cropController.rotateButtonsHidden = NO;
 
         // Uncomment this to place the toolbar at the top of the view controller
         // cropController.toolbarPosition = TOCropViewControllerToolbarPositionTop;
