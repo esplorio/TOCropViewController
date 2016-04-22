@@ -1005,64 +1005,48 @@ typedef NS_ENUM(NSInteger, TOCropViewOverlayEdge) {
     
     CGRect boundsFrame = self.contentBounds;
     CGRect cropBoxFrame = self.cropBoxFrame;
-    CGPoint offset = self.scrollView.contentOffset;
     
     BOOL cropBoxIsPortrait = NO;
     if ((NSInteger)aspectRatio.width == 1 && (NSInteger)aspectRatio.height == 1)
         cropBoxIsPortrait = self.image.size.width > self.image.size.height;
     else
         cropBoxIsPortrait = aspectRatio.width < aspectRatio.height;
-    
-    BOOL zoomOut = NO;
+
+    BOOL isFirstLoad = (cropBoxIsPortrait && cropBoxFrame.size.height == boundsFrame.size.height) ||
+                       (!cropBoxIsPortrait && cropBoxFrame.size.width == boundsFrame.size.width);
+
     if (cropBoxIsPortrait) {
-        CGFloat newWidth = cropBoxFrame.size.height * (aspectRatio.width/aspectRatio.height);
-        
-        CGFloat delta = cropBoxFrame.size.width - newWidth;
-        cropBoxFrame.size.width = newWidth;
-        offset.x += (delta * 0.5f);
-        
-        if (delta < 0.0f)
-            cropBoxFrame.origin.x = self.contentBounds.origin.x; //set to 0 to avoid accidental clamping by the crop frame sanitizer
-        
-        CGFloat boundsWidth = CGRectGetWidth(boundsFrame);
-        if (newWidth > boundsWidth) {
-            CGFloat scale = boundsWidth / newWidth;
-            cropBoxFrame.size.height *= scale;
-            cropBoxFrame.size.width = boundsWidth;
-            zoomOut = YES;
-        }
-    }
-    else {
         CGFloat newHeight = cropBoxFrame.size.width * (aspectRatio.height/aspectRatio.width);
+
         CGFloat delta = cropBoxFrame.size.height - newHeight;
         cropBoxFrame.size.height = newHeight;
-        offset.y += (delta * 0.5f);
-        
-        if (delta < 0.0f)
-            cropBoxFrame.origin.x = self.contentBounds.origin.y;
-        
+
         CGFloat boundsHeight = CGRectGetHeight(boundsFrame);
         if (newHeight > boundsHeight) {
             CGFloat scale = boundsHeight / newHeight;
             cropBoxFrame.size.width *= scale;
             cropBoxFrame.size.height = boundsHeight;
-            zoomOut = YES;
+        }
+    } else {
+
+        CGFloat newWidth = cropBoxFrame.size.height * (aspectRatio.width/aspectRatio.height);
+        CGFloat delta = cropBoxFrame.size.width - newWidth;
+        cropBoxFrame.size.width = newWidth;
+
+        CGFloat boundsWidth = CGRectGetWidth(boundsFrame);
+        if (newWidth > boundsWidth) {
+            CGFloat scale = boundsWidth / newWidth;
+            cropBoxFrame.size.height *= scale;
+            cropBoxFrame.size.width = boundsWidth;
         }
     }
-    
+
+    cropBoxFrame.origin.y = boundsFrame.origin.y + (boundsFrame.size.height - cropBoxFrame.size.height)/2.0f;
+
     self.aspectRatioLocked = YES;
-    
-    CGFloat maxZoomScale = MAX(cropBoxFrame.size.height / aspectRatio.height, cropBoxFrame.size.width / aspectRatio.width);
-    self.scrollView.maximumZoomScale = maxZoomScale;
-    
+
     void (^translateBlock)() = ^{
-        self.scrollView.contentOffset = offset;
         self.cropBoxFrame = cropBoxFrame;
-        
-        if (zoomOut)
-            self.scrollView.zoomScale = self.scrollView.minimumZoomScale;
-        
-        [self moveCroppedContentToCenterAnimated:NO];
         [self checkForCanReset];
     };
     
