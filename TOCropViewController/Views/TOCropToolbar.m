@@ -32,7 +32,6 @@
 @property (nonatomic, strong, readwrite) UIButton *cancelTextButton;
 @property (nonatomic, strong, readwrite) UIButton *cancelIconButton;
 
-@property (nonatomic, strong) UIButton *resetButton;
 @property (nonatomic, strong) UIButton *clampButton;
 
 @property (nonatomic, strong) UIButton *rotateButton; // defaults to counterclockwise button for legacy compatibility
@@ -66,7 +65,8 @@
     self.backgroundColor = [UIColor colorWithWhite:0.12f alpha:1.0f];
     
     _rotateClockwiseButtonHidden = YES;
-    
+    _rotateCounterClockwiseButtonHidden = YES;
+
     // On iOS 9, we can use the new layout features to determine whether we're in an 'Arabic' style language mode
     if ([UIView resolveClassMethod:@selector(userInterfaceLayoutDirectionForSemanticContentAttribute:)]) {
         self.reverseContentLayout = ([UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute] == UIUserInterfaceLayoutDirectionRightToLeft);
@@ -131,14 +131,6 @@
     [_rotateCounterclockwiseButton setImage:[TOCropToolbar rotateCCWImage] forState:UIControlStateNormal];
     [_rotateCounterclockwiseButton addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:_rotateCounterclockwiseButton];
-    
-    _resetButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    _resetButton.contentMode = UIViewContentModeCenter;
-    _resetButton.tintColor = [UIColor whiteColor];
-    _resetButton.enabled = NO;
-    [_resetButton setImage:[TOCropToolbar resetImage] forState:UIControlStateNormal];
-    [_resetButton addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    [self addSubview:_resetButton];
 }
 
 - (void)setFrame:(CGRect)frame
@@ -220,8 +212,6 @@
             [buttonsInOrderHorizontally addObject:self.rotateCounterclockwiseButton];
         }
         
-        [buttonsInOrderHorizontally addObject:self.resetButton];
-        
         if (!self.clampButtonHidden) {
             [buttonsInOrderHorizontally addObject:self.clampButton];
         }
@@ -257,8 +247,6 @@
         if (!self.rotateCounterClockwiseButtonHidden) {
             [buttonsInOrderVertically addObject:self.rotateCounterclockwiseButton];
         }
-        
-        [buttonsInOrderVertically addObject:self.resetButton];
         
         if (!self.clampButtonHidden) {
             [buttonsInOrderVertically addObject:self.clampButton];
@@ -303,9 +291,6 @@
     else if (button == self.doneTextButton || button == self.doneIconButton) {
         if (self.doneButtonTapped)
             self.doneButtonTapped();
-    }
-    else if (button == self.resetButton && self.resetButtonTapped) {
-        self.resetButtonTapped();
     }
     else if (button == self.rotateCounterclockwiseButton && self.rotateCounterclockwiseButtonTapped) {
         self.rotateCounterclockwiseButtonTapped();
@@ -352,16 +337,6 @@
     
     _rotateCounterClockwiseButtonHidden = rotateButtonHidden;
     [self setNeedsLayout];
-}
-
-- (BOOL)resetButtonEnabled
-{
-    return self.resetButton.enabled;
-}
-
-- (void)setResetButtonEnabled:(BOOL)resetButtonEnabled
-{
-    self.resetButton.enabled = resetButtonEnabled;
 }
 
 - (CGRect)doneButtonFrame
