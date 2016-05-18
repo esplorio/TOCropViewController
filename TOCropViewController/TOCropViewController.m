@@ -28,7 +28,6 @@
 
 @interface TOCropViewController () <UIActionSheetDelegate, UIViewControllerTransitioningDelegate, TOCropViewDelegate>
 
-@property (nonatomic, assign) BOOL isCropRatioFlipped;
 @property (nonatomic, strong) UIActivityIndicatorView *activityView;
 @property (nonatomic, readwrite) UIImage *image;
 @property (nonatomic, strong) TOCropToolbar *toolbar;
@@ -585,6 +584,18 @@
     if (self.rotateButtonsHidden == NO) {
         self.toolbar.rotateClockwiseButtonHidden = _rotateClockwiseButtonHidden;
     }
+}
+
+- (void)setIsCropRatioFlipped:(BOOL)isCropRatioFlipped
+{
+    if (isCropRatioFlipped == _isCropRatioFlipped) {
+        return;
+    }
+
+    _isCropRatioFlipped = isCropRatioFlipped;
+
+    // This following method will take into account the flipped flag
+    [self setAspectRatio:self.defaultAspectRatio animated:NO];
 }
 
 - (void)didFinishLoadingImage:(UIImage *)image {
