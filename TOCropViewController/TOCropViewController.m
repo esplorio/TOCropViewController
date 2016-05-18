@@ -595,7 +595,7 @@
     _isCropRatioFlipped = isCropRatioFlipped;
 
     // This following method will take into account the flipped flag
-    [self setAspectRatio:self.defaultAspectRatio animated:NO];
+    [self setAspectRatio:self.defaultAspectRatio animated:YES];
 }
 
 - (void)didFinishLoadingImage:(UIImage *)image {
