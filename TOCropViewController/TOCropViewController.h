@@ -142,6 +142,12 @@ typedef NS_ENUM(NSInteger, TOCropViewControllerToolbarPosition) {
 @property (nonatomic, assign) BOOL aspectRatioLocked;
 
 /**
+ If true, the crop aspect ratio will be flipped (portrait to landscape and vice versa).
+ Defaults to NO
+ */
+@property (nonatomic, assign) BOOL isCropRatioFlipped;
+
+/**
  If performing a transition animation, this block can be used to set up any 
  view states just before the animation begins.
  */
