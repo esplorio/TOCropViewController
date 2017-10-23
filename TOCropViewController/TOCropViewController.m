@@ -103,7 +103,7 @@
     self.toolbar.clampButtonHidden = self.aspectRatioLocked;
     
     self.transitioningDelegate = self;
-    self.view.backgroundColor = self.cropView.backgroundColor;
+    self.view.backgroundColor = self.toolbar.backgroundColor;
 
     if (self.defaultAspectRatio != TOCropViewControllerAspectRatioOriginal) {
         [self setAspectRatio:self.defaultAspectRatio animated:NO];
@@ -159,51 +159,83 @@
 
 - (CGRect)frameForToolBarWithVerticalLayout:(BOOL)verticalLayout
 {
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    if (@available(iOS 11.0, *)) {
+        insets = self.view.safeAreaInsets;
+    }
+
     CGRect frame = CGRectZero;
     if (!verticalLayout) {
-        frame.origin.x = 0.0f;
+        frame.origin.x = insets.left;
         frame.origin.y = 0.0f;
         frame.size.width = 44.0f;
         frame.size.height = CGRectGetHeight(self.view.frame);
     }
     else {
         frame.origin.x = 0.0f;
-        
-        if (_toolbarPosition == TOCropViewControllerToolbarPositionBottom) {
-            frame.origin.y = CGRectGetHeight(self.view.bounds) - 44.0f;
+
+        if (self.toolbarPosition == TOCropViewControllerToolbarPositionBottom) {
+            frame.origin.y = CGRectGetHeight(self.view.bounds) - (44.0f + insets.bottom);
         } else {
-            frame.origin.y = 0;
+            frame.origin.y = insets.top;
         }
-        
+
         frame.size.width = CGRectGetWidth(self.view.bounds);
         frame.size.height = 44.0f;
+
+        // If the bar is at the top of the screen and the status bar is visible, account for the status bar height
+        if (self.toolbarPosition == TOCropViewControllerToolbarPositionTop && self.prefersStatusBarHidden == NO) {
+            frame.size.height = 64.0f;
+        }
     }
-    
+
     return frame;
 }
 
 - (CGRect)frameForCropViewWithVerticalLayout:(BOOL)verticalLayout
 {
+    //On an iPad, if being presented in a modal view controller by a UINavigationController,
+    //at the time we need it, the size of our view will be incorrect.
+    //If this is the case, derive our view size from our parent view controller instead
+    UIView *view = nil;
+    if (self.parentViewController == nil) {
+        view = self.view;
+    }
+    else {
+        view = self.parentViewController.view;
+    }
+
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    if (@available(iOS 11.0, *)) {
+        insets = view.safeAreaInsets;
+    }
+
+    CGRect bounds = view.bounds;
     CGRect frame = CGRectZero;
+
     if (!verticalLayout) {
-        frame.origin.x = 44.0f;
+        frame.origin.x = 44.0f + insets.left;
         frame.origin.y = 0.0f;
-        frame.size.width = CGRectGetWidth(self.view.bounds) - 44.0f;
-        frame.size.height = CGRectGetHeight(self.view.frame);
+
+        frame.size.width = CGRectGetWidth(bounds) - (44.0f + insets.left);
+        frame.size.height = CGRectGetHeight(bounds);
+
     }
     else {
         frame.origin.x = 0.0f;
-        
+        frame.size.height = CGRectGetHeight(bounds);
+
         if (_toolbarPosition == TOCropViewControllerToolbarPositionBottom) {
             frame.origin.y = 0.0f;
+            frame.size.height -= (insets.bottom + 44.0f);
         } else {
-            frame.origin.y = 44.0f;
+            frame.origin.y = 44.0f + insets.top;
+            frame.size.height -= insets.top;
         }
 
-        frame.size.width = CGRectGetWidth(self.view.bounds);
-        frame.size.height = CGRectGetHeight(self.view.frame) - 44.0f;
+        frame.size.width = CGRectGetWidth(bounds);
     }
-    
+
     return frame;
 }
 
