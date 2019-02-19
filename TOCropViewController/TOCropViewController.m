@@ -447,6 +447,9 @@
         case TOCropViewControllerAspectRatio16x9:
             aspectRatio = CGSizeMake(16.0f, 9.0f);
             break;
+        case TOCropViewControllerAspectRatio11x10:
+            aspectRatio = CGSizeMake(11.0f, 10.0f);
+            break;
     }
     
     if (self.isCropRatioFlipped) {
